@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+app.use(express.json()); // permet de lire req.body en JSON
 let villes = [
   { id: 1, nom: "Lyon", visiter: "venissieux", manger: "tasty crousty", température: "il fait chaud" },
   { id: 2, nom: "Marseille", visiter: "felix pyat", manger: "tasty crousty", température: "il fait trop chaud" },
@@ -14,6 +15,22 @@ app.get("/villes/:id", (req, res) => {
     return res.status(404).json({ erreur: "ville introuvable" });
   }
   res.json(ville);
+});
+
+// POST /villes -> ajoute une ville envoye dans le corps de la requete
+app.post("/villes", (req, res) => {
+  if (!req.body.nom) {                          // donnee obligatoire manquante
+    return res.status(400).json({ erreur: "Le nom est obligatoire" });
+  }
+  const nouveau = {
+    id: villes.length + 1,
+    nom: req.body.nom,
+    visiter: req.body.visiter,
+    manger: req.body.manger,
+    température: req.body.température
+  };
+  villes.push(nouveau);                       // on ajoute au tableau
+  res.status(201).json(nouveau);                // 201 = cree
 });
 
 // GET /villes -> renvoie tout le tableau
